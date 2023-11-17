@@ -1,7 +1,11 @@
-import { EmptyAdapter } from './empty.adapter';
 import { RequestHandler } from '@nestjs/common/interfaces';
-import { KafkaConfig } from './kafka.config';
 import { Consumer, Kafka } from 'kafkajs';
+
+import { EmptyAdapter } from '@app/kafka-consumer-adapter/adapter/empty.adapter';
+import { KafkaConfig } from '@app/kafka-consumer-adapter/adapter/kafka.config';
+import { Type } from '@app/kafka-consumer-adapter/common/types';
+import { MessageHandlerMetadataExplorer } from '@app/kafka-consumer-adapter/explorer/message-handler-metadata-explorer';
+import { MessageHandlerMetadataMap } from '@app/kafka-consumer-adapter/handler/message-handler-metadata';
 
 type ListenFnCallback = (...args: unknown[]) => void;
 
@@ -15,55 +19,38 @@ export type KafkaRequest = {
 // 비동기 처리라서 응답 객체는 없음
 export type KafkaResponse = unknown;
 
-export class DiscordBotAdapter extends EmptyAdapter {
+export class KafkaConsumerAdapter extends EmptyAdapter {
   private readonly kafkaClient: Kafka;
   private readonly kafkaConsumer: Consumer;
   private readonly config: KafkaConfig;
 
   private readonly commands: Record<string, RequestHandler>;
+  private readonly metadataMap: MessageHandlerMetadataMap;
 
-  constructor(config: KafkaConfig) {
+  constructor(module: Type<any>, config: KafkaConfig) {
     super('kafka');
 
     this.kafkaClient = new Kafka(config.client);
     this.kafkaConsumer = this.kafkaClient.consumer(config.consumer);
+
+    const explorer = new MessageHandlerMetadataExplorer();
+    this.metadataMap = explorer.explore(module);
+
+    console.log(this.metadataMap);
+
     this.config = config;
-
-    this.commands = {};
-
-    this.discordClient.on(
-      'interactionCreate',
-      async (interaction: BaseInteraction) => {
-        if (!interaction.isChatInputCommand()) return;
-        const request: KafkaRequest = {
-          sender: interaction.user,
-        };
-        const response: DiscordResponse = {
-          reply: interaction.reply.bind(interaction),
-        };
-
-        const handler = this.commands[interaction.commandName];
-        if (!handler) {
-          interaction.reply('Command not found');
-          return;
-        }
-
-        await handler(request, response);
-      },
-    );
   }
 
   get(handler: RequestHandler): void;
   get(path: any, handler: RequestHandler): void;
   get(rawPath: unknown, rawHandler?: unknown): void {
-    if (!rawHandler) {
-      return;
-    }
-
-    const path = rawPath as string;
-    const handler = rawHandler as RequestHandler;
-    const command = this.removeLeadingSlash(path);
-    this.commands[command] = handler;
+    // if (!rawHandler) {
+    //   return;
+    // }
+    // const path = rawPath as string;
+    // const handler = rawHandler as RequestHandler;
+    // const command = this.removeLeadingSlash(path);
+    // this.commands[command] = handler;
   }
 
   listen(port: string | number, callback?: () => void): any;

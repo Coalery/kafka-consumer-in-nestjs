@@ -1,15 +1,12 @@
-import {
-  NestApplicationOptions,
-  RequestMethod,
-  VersioningOptions,
-} from '@nestjs/common';
 import { VersionValue } from '@nestjs/common/interfaces';
+import { AbstractHttpAdapter } from '@nestjs/core';
+import { NestApplicationOptions, VersioningOptions } from '@nestjs/common';
 import {
   CorsOptions,
   CorsOptionsDelegate,
 } from '@nestjs/common/interfaces/external/cors-options.interface';
-import { AbstractHttpAdapter } from '@nestjs/core';
-import { EmptyHttpServer } from './empty.http-server';
+
+import { EmptyHttpServer } from '@app/kafka-consumer-adapter/adapter/empty.http-server';
 
 export class EmptyAdapter extends AbstractHttpAdapter {
   constructor(private readonly type: string) {

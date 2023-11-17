@@ -1,11 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { AppService } from '@app/app.service';
+import { KafkaController } from '@app/kafka-consumer-adapter/handler/kafka-controller.decorator';
+import { MessageHandler } from '@app/kafka-consumer-adapter/handler/message-handler.decorator';
 
-@Controller()
+@KafkaController()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
+  @MessageHandler('user.created')
   getHello(): string {
     return this.appService.getHello();
   }
