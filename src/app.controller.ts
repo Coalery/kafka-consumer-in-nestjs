@@ -1,4 +1,4 @@
-import { Req, UseFilters, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Req, UseFilters, UseGuards } from '@nestjs/common';
 
 import { KafkaRequest } from '@app/kafka-consumer-adapter/adapter/kafka-consumer.adapter';
 import { KafkaController } from '@app/kafka-consumer-adapter/handler/kafka-controller.decorator';
