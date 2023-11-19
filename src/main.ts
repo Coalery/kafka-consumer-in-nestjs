@@ -7,10 +7,12 @@ async function bootstrap() {
   const app = await NestFactory.create(
     AppModule,
     new KafkaConsumerAdapter(AppModule, {
-      client: { brokers: ['http://localhost:9092'] },
-      consumer: { groupId: 'groupId' },
+      client: { brokers: ['localhost:9093'] },
+      consumer: { groupId: 'groupId-1' },
+      subscribe: { topics: ['user.created', 'user.left'] },
     }),
   );
+  app.enableShutdownHooks();
   await app.listen(0);
 }
 bootstrap();
