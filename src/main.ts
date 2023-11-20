@@ -12,7 +12,6 @@ async function bootstrap() {
       subscribe: { topics: ['user.created', 'user.left'] },
     }),
   );
-  app.enableShutdownHooks();
   await app.listen(0);
 }
 bootstrap();
