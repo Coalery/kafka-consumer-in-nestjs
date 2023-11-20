@@ -109,8 +109,4 @@ export class KafkaConsumerAdapter extends EmptyAdapter {
   private removeLeadingSlash(path: string): string {
     return path[0] === '/' ? path.substring(1) : path;
   }
-
-  private extract<T>(a?: any, b?: any): T | undefined {
-    return a ?? b;
-  }
 }
