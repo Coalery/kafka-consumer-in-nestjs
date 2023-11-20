@@ -18,7 +18,7 @@ NestJS로 kafka consumer를 만듭니다. 어댑터 레벨에서 메시지를 �
 
 > `AppModule`을 받아서 직접 순회하면 되지 않을까?
 
-`AppModule`의 메타데이터에는 `imports`로 해당 NestJS 앱 안에서 사용하는 모든 모듈에 대해 접근할 수 있다는 특징이 있습니다.
+`AppModule`의 메타데이터에는 `imports`로 해당 NestJS 앱 안에서 사용하는 내부 모듈이 아닌 모든 모듈에 대해 접근할 수 있다는 특징이 있습니다.
 
 예를 들면 다음과 같습니다.
 
