@@ -16,11 +16,24 @@ NestJS로 kafka consumer를 만듭니다. 어댑터 레벨에서 메시지를 �
 
 ### Idea
 
-의존성 처리 전에 어댑터가 생성되어야 하는데, 결국 모든 처리가 어댑터에서 이루어지기 때문에 nestjs의 DI Container를 사용할 수 없습니다.
+`AppModule`의 메타데이터에는 `imports`로 해당 NestJS 앱 안에서 사용하는 모든 모듈에 대해 접근할 수 있다는 특징이 있습니다.
 
-또한 `DiscordBotAdapter#get` 메서드에서 받는 `handler` 파라미터가 컨트롤러의 메서드를 가리키는 것이 아니라, 컨트롤러의 메서드를 host filter, guard, interceptor 등 많은 과정을 적용한 메서드입니다. 따라서 컨트롤러의 메서드에 붙어 있는 메타데이터를 가져올 수 없다는 한계점이 존재합니다.
+예를 들면 다음과 같습니다.
 
-다만, 실제로 명령어 처리를 시작하는 것은 `INestApplication#listen` 메서드를 호출한 뒤라는 사실을 활용하면 조금 tricky 하더라도 메타데이터 정보를 어댑터 안으로 가져올 수 있습니다.
+```typescript
+@Module({
+  imports: [AModule, BModule]
+  controllers: [/* ... */]
+  providers: [/* ... */]
+})
+export class AppModule {}
+```
+
+위와 같이 모듈을 만들면, `AppModule`의 `imports` 메타데이터에 `[AModule, BModule]`이 들어가는 형태입니다.
+
+즉 Forward reference나 Dynamic Module이 없다는 가정 하에, 모듈은 트리 구조를 갖는 다는 걸 알 수 있습니다.
+
+따라서 DFS로 순회를 돌면서 컨트롤러들을 확인하여 해당하는 핸들러의 메타데이터를 맵에 저장하고, 그 뒤에 사용하는 형태로 구현하였습니다.
 
 ### Prerequirements
 
